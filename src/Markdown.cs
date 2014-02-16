@@ -85,7 +85,6 @@ namespace Sfx.Markdown
 							{
 								Default(line, writer);
 							}
-							writer.Write("<br />\n");
 						}
 						break;
 
@@ -94,12 +93,17 @@ namespace Sfx.Markdown
 						writer.Write("\n");
 						break;
 				}
-			}
-			
-			
-			if (status == INSIDE_LIST)
+			}			
+
+			switch(status)
 			{
-				writer.WriteLine ("</ul>");
+				case INSIDE_LIST:
+					writer.WriteLine ("</ul>");
+					break;
+
+				case INSIDE_PRE:
+					writer.WriteLine ("</pre>");
+					break;
 			}
 		}
 
@@ -107,7 +111,7 @@ namespace Sfx.Markdown
 		{
 			if(status != INSIDE_PRE)
 			{
-				if(lineIndex == 0 || lines[lineIndex - 1] != string.Empty)
+				if(lineIndex > 0 && lines[lineIndex - 1] != string.Empty)
 				{
 					return false;
 				}
@@ -127,8 +131,22 @@ namespace Sfx.Markdown
 				line = line.Substring(1);
 			}
 
-			// añadir la línea tal cual, sin procesar
-			wr.Write(EncodeHtmlEntities(line));
+			line = EncodeHtmlEntities(line);
+
+			foreach(var c in line)
+			{
+				switch(c)
+				{
+					case '\t':
+						wr.Write("    ");
+						break;
+
+					default:
+						wr.Write(c);
+						break;
+				}
+			}
+
 			wr.Write("\n");
 		}
 
@@ -169,6 +187,13 @@ namespace Sfx.Markdown
 		static void Default(string line, TextWriter wr)
 		{
 			wr.Write(EncodeLine(line));
+
+			wr.Write("\n");
+
+			if(line.EndsWith("  "))
+			{
+				wr.Write("<br />");
+			}
 		}
 		
 		static string EncodeLine(string line)
@@ -199,37 +224,42 @@ namespace Sfx.Markdown
 		
 		static string EncodeTag(string line, string token, string htmlTag)
 		{
-			var start = line.IndexOf (token);
-			if (start != -1)
+			var start = 0;
+			do
 			{
-				var tokenLen = token.Length;
-
-				var end = line.IndexOf (token, start + tokenLen);
-				if (end != -1)
+				start = line.IndexOf(token, start);
+				if(start != -1)
 				{
-					var sb = new StringBuilder();
+					var tokenLen = token.Length;
 
-					if(start > -1)
+					var end = line.IndexOf(token, start + tokenLen);
+					if(end != -1)
 					{
-						sb.Append(line.Substring(0, start));
-					}
+						var sb = new StringBuilder();
+
+						if(start > -1)
+						{
+							sb.Append(line.Substring(0, start));
+						}
 					
-					sb.Append("<");
-					sb.Append(htmlTag);
-					sb.Append(">");					
-					sb.Append(line.Substring(start + tokenLen, end - start - tokenLen));
-					sb.Append("</");
-					sb.Append(htmlTag);
-					sb.Append(">");	
+						sb.Append("<");
+						sb.Append(htmlTag);
+						sb.Append(">");					
+						sb.Append(line.Substring(start + tokenLen, end - start - tokenLen));
+						sb.Append("</");
+						sb.Append(htmlTag);
+						sb.Append(">");	
 
-					if(line.Length > end + tokenLen)
-					{
-						sb.Append(line.Substring(end + tokenLen));
+						if(line.Length > end + tokenLen)
+						{
+							sb.Append(line.Substring(end + tokenLen));
+						}
+
+						line = sb.ToString();
 					}
-
-					line = sb.ToString();
 				}
 			}
+			while(start != -1);
 			
 			return line;
 		}
