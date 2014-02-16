@@ -8,7 +8,7 @@ namespace Sfx.Markdown
 	/// <summary>
 	/// Implementa un subset de Markdown.
 	/// </summary>
-	public static class MarkdownWritter
+	public static class Mkdown
 	{
 		const int DEFAULT = 0;
 		const int INSIDE_LIST = 1;
@@ -17,16 +17,16 @@ namespace Sfx.Markdown
 		const string H1_TAG = "=====";
 		const string H2_TAG = "-----";
 
-		public static string Write(string text)
+		public static string Encode(string text)
 		{			
 			using(var w = new StringWriter())
 			{
-				Write(text, w);
+				Encode(text, w);
 				return w.ToString();
 			}
 		}
 
-		public static void Write(string text, TextWriter writer)
+		public static void Encode(string text, TextWriter writer)
 		{
 			text = text.Replace ("\r", "");
 			var lines = text.Split ('\n');

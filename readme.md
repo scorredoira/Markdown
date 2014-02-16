@@ -3,10 +3,7 @@ Implements a subset de **Markdown**.
 How to use it
 =============
 
-    var html = MarkDown.Encode(text);
-
-Syntax
-======
+    var html = MkDown.Encode(text);
 
 Negrita
 =======
@@ -72,13 +69,3 @@ Imágenes
 	![Texto alternativo](www.google.com/logo.gif)
 	genera:
 	<img src='www.google.com/logo.gif' alt='Texto alternativo' /> 
-
-Html personalizado:
-===================
-Esta opción está deshabilitada por defecto. Es util cuando confiamos en el origen de los datos. Sustituir < y > por dobles llaves:
-
-	{{span class='foo'}}hello{{/span}}
-	genera:
-	<span class='foo'>hello</span>
-
-Los saltos de línea se convierten automáticamente a <br />.
