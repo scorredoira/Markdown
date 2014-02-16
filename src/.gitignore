@@ -24,6 +24,7 @@ Bin/
 *.min.css
 *.min.js
 *test-results
+*.dep
 
 *.perso
 *.log
