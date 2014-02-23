@@ -233,7 +233,11 @@ namespace Sfx.Markdown
 					var tokenLen = token.Length;
 
 					var end = line.IndexOf(token, start + tokenLen);
-					if(end != -1)
+					if(end == -1)
+					{
+						break;
+					}
+					else
 					{
 						var sb = new StringBuilder();
 
